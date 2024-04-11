@@ -5,7 +5,7 @@ from jwt import PyJWTError
 import bcrypt
 from pydantic import ValidationError
 
-from services.authenticate.schemas import UserSchema, TokenSchema, UserCreateSchema
+from .schemas import UserSchema, TokenSchema, UserCreateSchema
 from fastapi.exceptions import HTTPException
 from fastapi import status, Depends, Request
 from fastapi.responses import JSONResponse
@@ -61,14 +61,15 @@ class AuthService:
 
     @classmethod
     async def create_token(cls, user: User) -> TokenSchema:
-        user_data = UserSchema(id=user.id, username=user.username, email=user.email)
+        user_data = UserSchema(id=user.id, username=user.username, email=user.email, role_id=user.role_id)
         time_now = datetime.datetime.utcnow()
         payload = {
             'iat': time_now,
             'nbf': time_now,
             'exp': time_now + datetime.timedelta(seconds=jwt_expiration),
             'sub': str(user_data.id),
-            'user': user_data.dict()
+            'user': user_data.dict(),
+            'role_id': user_data.role_id
         }
         token = jwt.encode(payload, jwt_private_key, algorithm=jwt_algorithm)
         return TokenSchema(access_token=token)

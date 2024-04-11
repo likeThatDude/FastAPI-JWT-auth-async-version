@@ -12,6 +12,7 @@ class UserCreateSchema(BaseUserSchema):
 
 class UserSchema(BaseUserSchema):
     id: int
+    role_id: int
 
     class Config:
         from_attributes = True

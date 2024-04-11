@@ -10,8 +10,6 @@ from alembic import context
 from services.database.db_connect import Base
 from config import DB_HOST, DB_NAME, DB_PASS, DB_PORT, DB_USER
 
-from services.authenticate.models import User, Role
-
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
