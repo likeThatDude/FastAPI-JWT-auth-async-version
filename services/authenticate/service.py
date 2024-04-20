@@ -5,7 +5,7 @@ from jwt import PyJWTError
 import bcrypt
 from pydantic import ValidationError
 
-from .schemas import UserSchema, TokenSchema, UserCreateSchema
+from services.authenticate.schemas import UserSchema, TokenSchema, UserCreateSchema
 from fastapi.exceptions import HTTPException
 from fastapi import status, Depends, Request
 from fastapi.responses import JSONResponse
@@ -14,7 +14,7 @@ from services.database.db_connect import get_async_session
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
-from config import jwt_private_key, jwy_public_key, jwt_algorithm, jwt_expiration
+from config import settings
 
 
 async def get_current_user(user_request: Request) -> UserSchema:
@@ -48,7 +48,7 @@ class AuthService:
             }
         )
         try:
-            payload = jwt.decode(token, jwy_public_key, algorithms=[jwt_algorithm])
+            payload = jwt.decode(token, settings.jwy_public_key, algorithms=[settings.jwt_algorithm])
         except PyJWTError:
             raise exception from None
         user_data = payload.get('user')
@@ -66,12 +66,12 @@ class AuthService:
         payload = {
             'iat': time_now,
             'nbf': time_now,
-            'exp': time_now + datetime.timedelta(seconds=jwt_expiration),
+            'exp': time_now + datetime.timedelta(seconds=settings.jwt_expiration),
             'sub': str(user_data.id),
             'user': user_data.dict(),
             'role_id': user_data.role_id
         }
-        token = jwt.encode(payload, jwt_private_key, algorithm=jwt_algorithm)
+        token = jwt.encode(payload, settings.jwt_private_key, algorithm=settings.jwt_algorithm)
         return TokenSchema(access_token=token)
 
     def __init__(self, session: AsyncSession = Depends(get_async_session)):

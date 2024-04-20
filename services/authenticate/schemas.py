@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class BaseUserSchema(BaseModel):
@@ -11,11 +11,9 @@ class UserCreateSchema(BaseUserSchema):
 
 
 class UserSchema(BaseUserSchema):
+    model_config = ConfigDict(from_attributes=True)
     id: int
     role_id: int
-
-    class Config:
-        from_attributes = True
 
 
 class UserLoginSchema(BaseModel):

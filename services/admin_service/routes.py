@@ -1,8 +1,6 @@
 from typing import Union
 
-from fastapi import APIRouter, Depends, HTTPException
-from fastapi.security import OAuth2PasswordRequestForm
-
+from fastapi import APIRouter, Depends
 from services.authenticate.service import get_current_user
 from services.authenticate.schemas import UserSchema
 from services.admin_service.service import AdminService

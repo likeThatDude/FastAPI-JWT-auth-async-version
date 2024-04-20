@@ -6,3 +6,4 @@ class Calculator:
     @staticmethod
     def add(x: int | float, y: int | float) -> int | float:
         return x + y
+
