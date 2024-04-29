@@ -24,3 +24,12 @@ exception_500 = HTTPException(
         'WWW-Authenticate': 'Bearer'
     }
 )
+
+
+exception_400 = HTTPException(
+    status_code=status.HTTP_400_BAD_REQUEST,
+    detail='Invalid data provided',
+    headers={
+        'WWW-Authenticate': 'Bearer'
+    }
+)

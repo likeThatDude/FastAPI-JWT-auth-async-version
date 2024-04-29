@@ -1,15 +1,17 @@
 import datetime
+from typing import Union
 
 import jwt
 from jwt import PyJWTError
 import bcrypt
 from pydantic import ValidationError
 
-from services.authenticate.schemas import UserSchema, TokenSchema, UserCreateSchema
+from services.authenticate.schemas import UserSchema, TokenSchema, UserCreateSchema, ExceptionSchema
 from fastapi.exceptions import HTTPException
 from fastapi import status, Depends, Request
 from fastapi.responses import JSONResponse
 from services.authenticate.models import User
+from services.authenticate.exeptions import exception_400_banned, exception_401
 from services.database.db_connect import get_async_session
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -89,22 +91,18 @@ class AuthService:
         await self.session.commit()
         return token
 
-    async def authenticate_user(self, username: str, password: str) -> JSONResponse:
-        exception = HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail='Incorrect username or password',
-            headers={
-                'WWW-Authenticate': 'Bearer'
-            }
-        )
+    async def authenticate_user(self, username: str, password: str) -> Union[JSONResponse, ExceptionSchema]:
         query = await self.session.execute(select(User).where(User.username == username))
         user = query.scalar()
 
+        if user.ban is True:
+            return exception_400_banned
+
         if not user:
-            raise exception
+            raise exception_401
 
         if not await self.verify_password(password, user.hashed_password):
-            raise exception
+            raise exception_401
         token = await self.create_token(user)
         response = JSONResponse(content={"token": token.access_token})
         response.set_cookie(key="access_token", value=token.access_token)

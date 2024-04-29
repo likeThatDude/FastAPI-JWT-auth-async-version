@@ -20,6 +20,6 @@ async def startup_event(app: FastAPI):
 app = FastAPI(title='Test App', lifespan=startup_event)
 app.include_router(auth_router)
 app.include_router(admin_route)
-
-if __name__ == '__main__':
-    uvicorn.run(app)
+#
+# if __name__ == '__main__':
+#     uvicorn.run(app)

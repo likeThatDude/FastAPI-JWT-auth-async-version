@@ -28,3 +28,9 @@ class CookieResponse(BaseModel):
 class TokenSchema(BaseModel):
     access_token: str
     token_type: str = 'bearer'
+
+
+class ExceptionSchema(BaseModel):
+    status_code: int
+    detail: str
+    headers: dict

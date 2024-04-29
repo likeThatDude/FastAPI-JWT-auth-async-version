@@ -11,6 +11,7 @@ class User(Base):
     hashed_password: Mapped[str] = mapped_column(nullable=False)
     role_id: Mapped[int] = mapped_column(ForeignKey('roles.id'), nullable=False, default=1)
     roles: Mapped[list['Role']] = relationship(back_populates='users')
+    ban: Mapped[bool] = mapped_column(nullable=True, default=False)
 
 
 class Role(Base):
