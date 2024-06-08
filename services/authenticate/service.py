@@ -105,5 +105,5 @@ class AuthService:
             raise exception_401
         token = await self.create_token(user)
         response = JSONResponse(content={"token": token.access_token})
-        response.set_cookie(key="access_token", value=token.access_token)
+        response.set_cookie(key="access_token", value=token.access_token, samesite='strict')
         return response
